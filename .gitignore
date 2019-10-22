@@ -1,0 +1,15 @@
+.buildpath
+.settings/
+.project
+*.patch
+.idea/
+.git/
+runtime/
+vendor/
+temp/
+*.lock
+*.phar
+.phpintel/
+.env
+.DS_Store
+swoftcli.yml

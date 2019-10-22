@@ -1,0 +1,10 @@
+arguments:
+  a: 1
+options:
+  b: 2
+commands:
+  "serve:run":
+    pidFile: runtime/swoft.pid
+  "gen:controller":
+    - a
+    - b

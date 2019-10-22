@@ -1,0 +1,50 @@
+{
+  "name": "swoft/cli",
+  "type": "project",
+  "keywords": [
+    "php",
+    "swoole",
+    "helper",
+    "swoft-cli",
+    "swoft"
+  ],
+  "description": "micro-service framework base on swoole",
+  "license": "Apache-2.0",
+  "require": {
+    "php": ">7.1.0",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "seld/phar-utils": "^1.0",
+    "swoft/framework": "~2.0.1",
+    "swoft/tcp": "~2.0.1",
+    "swoft/http-server": "~2.0.0"
+  },
+  "require-dev": {
+    "swoft/swoole-ide-helper": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "Swoft\\Cli\\": "app/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SwoftTest\\Cli\\": "test/"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://mirrors.aliyun.com/composer/"
+    },
+    "0": {
+      "type": "git",
+      "url": "https://github.com/swoftlabs/common-devtool.git"
+    }
+  },
+  "scripts": {
+    "test0": "echo 'hello'",
+    "test": "./vendor/bin/phpunit -c phpunit.xml",
+    "cs-fix": "./vendor/bin/php-cs-fixer fix $1"
+  }
+}
