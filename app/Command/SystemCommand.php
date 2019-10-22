@@ -101,7 +101,6 @@ class SystemCommand
 
     public function ss(): void
     {
-
     }
 
     public function lsof(): void

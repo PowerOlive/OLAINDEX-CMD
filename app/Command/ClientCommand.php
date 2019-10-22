@@ -226,6 +226,5 @@ class ClientCommand
      */
     public function udp(): void
     {
-
     }
 }

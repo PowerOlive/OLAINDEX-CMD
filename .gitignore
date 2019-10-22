@@ -13,3 +13,4 @@ temp/
 .env
 .DS_Store
 swoftcli.yml
+.php_cs.cache
