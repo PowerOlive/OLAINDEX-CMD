@@ -5,7 +5,6 @@ namespace Swoft\Cli\Service;
 
 
 use App\Service\Core\Constants;
-use Swlib\Saber;
 use Swlib\SaberGM;
 use Swoft\Cli\Models\Client;
 use Swoft\Stdlib\Helper\ArrayHelper;
@@ -21,6 +20,7 @@ class AuthorizeService
      * @var $account
      */
     private $account;
+
     /**
      * @return AuthorizeService
      */
@@ -31,12 +31,14 @@ class AuthorizeService
         }
         return self::$instance;
     }
+
     /**
      * AuthorizeService constructor.
      */
     private function __construct()
     {
     }
+
     /**
      * @param $account
      * @return $this
@@ -46,11 +48,11 @@ class AuthorizeService
         $this->account = $account;
         return $this;
     }
+
     /**
      * OneDrive 授权请求
      * @param $form_params
      * @return Collection
-     * @throws ErrorException
      */
     private function request($form_params): Collection
     {
@@ -68,7 +70,7 @@ class AuthorizeService
             );
         }
         try {
-            $response = SaberGM::post($client->authorize_url . $client->token_endpoint,$form_params,[
+            $response = SaberGM::post($client->authorize_url . $client->token_endpoint, $form_params, [
                 'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded'
                 ],
@@ -77,13 +79,11 @@ class AuthorizeService
                 'timeout' => Constants::DEFAULT_TIMEOUT,
             ]);
         } catch (\Exception $e) {
-            $error = [
-                'errno' => $e->getCode(),
-                'message' => $e->getMessage(),
-            ];
+            throw new $e($e->getCode() . '\n' . $e->getMessage());
         }
         return collect($response->getBody());
     }
+
     /**
      * 获取授权登录地址
      *
@@ -106,11 +106,11 @@ class AuthorizeService
         $authorization_url = $client->authorize_url . $client->authorize_endpoint . "?{$query}";
         return $authorization_url;
     }
+
     /**
      * 请求获取access_token
      * @param $code
      * @return Collection
-     * @throws ErrorException
      */
     public function getAccessToken($code): Collection
     {
@@ -120,11 +120,11 @@ class AuthorizeService
         ];
         return $this->request($form_params);
     }
+
     /**
      * 请求刷新access_token
      * @param $existingRefreshToken
      * @return Collection
-     * @throws ErrorException
      */
     public function refreshAccessToken($existingRefreshToken): Collection
     {
@@ -134,6 +134,7 @@ class AuthorizeService
         ];
         return $this->request($form_params);
     }
+
     /**
      * 防止实例被克隆（这会创建实例的副本）
      */
