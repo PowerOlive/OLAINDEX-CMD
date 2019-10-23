@@ -28,7 +28,10 @@
   "autoload": {
     "psr-4": {
       "Swoft\\Cli\\": "app/"
-    }
+    },
+    "files": [
+      "app/Helper/Functions.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {

@@ -5,6 +5,7 @@ namespace Swoft\Cli\Service;
 
 
 use App\Service\Core\Constants;
+use Swlib\Http\Stream;
 use Swlib\SaberGM;
 use Swoft\Cli\Models\Client;
 use Swoft\Stdlib\Helper\ArrayHelper;
@@ -52,17 +53,17 @@ class AuthorizeService
     /**
      * OneDrive 授权请求
      * @param $form_params
-     * @return Collection
+     * @return \Psr\Http\Message\StreamInterface|\Swlib\Http\StreamInterface
      */
-    private function request($form_params): Collection
+    private function request($form_params)
     {
-        $client = new Client(Client::setClientConfig($this->account));
+        $client = new Client($this->account);
         $form_params = array_merge([
             'client_id' => $client->client_id,
             'client_secret' => $client->client_secret,
             'redirect_uri' => $client->redirect_uri,
         ], $form_params);
-        if (ArrayHelper::get($this->account, 'account_type', 0) === Constants::ACCOUNT_CN) {
+        if (ArrayHelper::getValue($this->account, 'account_type', 0) === Constants::ACCOUNT_CN) {
             $form_params = ArrayHelper::set(
                 $form_params,
                 'resource',
@@ -72,7 +73,7 @@ class AuthorizeService
         try {
             $response = SaberGM::post($client->authorize_url . $client->token_endpoint, $form_params, [
                 'headers' => [
-                    'Content-Type' => 'application/x-www-form-urlencoded'
+                    'Content-Type' => 'application/x-www-form-urlencoded',
                 ],
                 'useragent' => 'ISV|OLAINDEX|OLAINDEX/9.9.9',
                 'retry_time' => Constants::DEFAULT_RETRY,
@@ -81,7 +82,7 @@ class AuthorizeService
         } catch (\Exception $e) {
             throw new $e($e->getCode() . '\n' . $e->getMessage());
         }
-        return collect($response->getBody());
+        return $response->getBody();
     }
 
     /**
@@ -92,7 +93,7 @@ class AuthorizeService
      */
     public function getAuthorizeUrl($state = ''): string
     {
-        $client = new Client(Client::setClientConfig($this->account));
+        $client = new Client($this->account);
         $values = [
             'client_id' => $client->client_id,
             'redirect_uri' => $client->redirect_uri,
@@ -110,9 +111,9 @@ class AuthorizeService
     /**
      * 请求获取access_token
      * @param $code
-     * @return Collection
+     * @return \Psr\Http\Message\StreamInterface|\Swlib\Http\StreamInterface
      */
-    public function getAccessToken($code): Collection
+    public function getAccessToken($code)
     {
         $form_params = [
             'code' => $code,
@@ -124,9 +125,9 @@ class AuthorizeService
     /**
      * 请求刷新access_token
      * @param $existingRefreshToken
-     * @return Collection
+     * @return \Psr\Http\Message\StreamInterface|\Swlib\Http\StreamInterface
      */
-    public function refreshAccessToken($existingRefreshToken): Collection
+    public function refreshAccessToken($existingRefreshToken)
     {
         $form_params = [
             'refresh_token' => $existingRefreshToken,

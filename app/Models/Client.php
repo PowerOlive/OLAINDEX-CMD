@@ -10,6 +10,11 @@ use Swoft\Stdlib\Helper\ArrayHelper;
 class Client
 {
     /**
+     * @var integer
+     */
+    public $account_type = 1;
+
+    /**
      * @var string
      */
     public $client_id;
@@ -45,49 +50,56 @@ class Client
      * @var string
      */
     public $scopes;
+
     /**
      * Client constructor.
      * @param array $array
      */
     public function __construct($array = [])
     {
-        foreach ($array as $k => $v) {
-            if (property_exists($this, $k)) {
-                $this->$k = $v;
-            }
-        }
+        $this->loadConfig($array);
     }
+
     /**
-     * 获取客户端配置
-     * @param $account
-     * @return mixed
+     * @param $array
      */
-    public static function setClientConfig($account)
+    public function loadConfig($array): void
     {
-        $config = [
-            Constants::ACCOUNT_COM => [
-                'client_id' => ArrayHelper::get($account, 'client_id'),
-                'client_secret' => ArrayHelper::get($account, 'client_secret'),
-                'redirect_uri' => ArrayHelper::get($account, 'redirect_uri'),
+        $account_type = (int)ArrayHelper::get($array, 'account_type', 1);
+        $config = [];
+        if ($account_type === Constants::ACCOUNT_COM) {
+            $config = [
+                'account_type' => $account_type,
+                'client_id' => ArrayHelper::get($array, 'client_id'),
+                'client_secret' => ArrayHelper::get($array, 'client_secret'),
+                'redirect_uri' => ArrayHelper::get($array, 'redirect_uri'),
                 'authorize_url' => Constants::AUTHORITY_URL,
                 'authorize_endpoint' => Constants::AUTHORIZE_ENDPOINT,
                 'token_endpoint' => Constants::TOKEN_ENDPOINT,
                 'graph_endpoint' => Constants::REST_ENDPOINT,
                 'api_version' => Constants::API_VERSION,
                 'scopes' => Constants::SCOPES
-            ],
-            Constants::ACCOUNT_CN => [
-                'client_id' => ArrayHelper::get($account, 'client_id'),
-                'client_secret' => ArrayHelper::get($account, 'client_secret'),
-                'redirect_uri' => ArrayHelper::get($account, 'redirect_uri'),
+            ];
+        }
+
+        if ($account_type === Constants::ACCOUNT_CN) {
+            $config = [
+                'account_type' => $account_type,
+                'client_id' => ArrayHelper::get($array, 'client_id'),
+                'client_secret' => ArrayHelper::get($array, 'client_secret'),
+                'redirect_uri' => ArrayHelper::get($array, 'redirect_uri'),
                 'authorize_url' => Constants::AUTHORITY_URL_21V,
                 'authorize_endpoint' => Constants::AUTHORIZE_ENDPOINT_21V,
                 'token_endpoint' => Constants::TOKEN_ENDPOINT_21V,
                 'graph_endpoint' => Constants::REST_ENDPOINT_21V,
                 'api_version' => Constants::API_VERSION,
                 'scopes' => Constants::SCOPES
-            ]
-        ];
-        return $config[ArrayHelper::get($account, 'account_type', 1)];
+            ];
+        }
+        foreach ($config as $k => $v) {
+            if (property_exists($this, $k)) {
+                $this->$k = $v;
+            }
+        }
     }
 }
