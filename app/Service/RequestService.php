@@ -207,7 +207,7 @@ class RequestService
         try {
             /* @var $response Saber\Response */
             $response = call_user_func_array([$saber, $this->requestType], $params);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->responseError = collect([
                 'errno' => $e->getCode(),
                 'message' => $e->getMessage(),
@@ -216,7 +216,7 @@ class RequestService
         }
 
         $this->responseHeaders = collect($response->getHeaders())->toJson();
-        $this->response = collect($response->getBody())->toJson();
+        $this->response = collect($response->getBody()->getContents())->toJson();
         return $this;
     }
 

@@ -53,7 +53,8 @@ class AuthorizeService
     /**
      * OneDrive 授权请求
      * @param $form_params
-     * @return \Psr\Http\Message\StreamInterface|\Swlib\Http\StreamInterface
+     * @return string
+     * @throws \ErrorException
      */
     private function request($form_params)
     {
@@ -70,19 +71,19 @@ class AuthorizeService
                 $client->graph_endpoint
             );
         }
-        try {
-            $response = SaberGM::post($client->authorize_url . $client->token_endpoint, $form_params, [
-                'headers' => [
-                    'Content-Type' => 'application/x-www-form-urlencoded',
-                ],
-                'useragent' => 'ISV|OLAINDEX|OLAINDEX/9.9.9',
-                'retry_time' => Constants::DEFAULT_RETRY,
-                'timeout' => Constants::DEFAULT_TIMEOUT,
-            ]);
-        } catch (\Exception $e) {
-            throw new $e($e->getCode() . '\n' . $e->getMessage());
+        $response = SaberGM::post($client->authorize_url . $client->token_endpoint, $form_params, [
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
+            'useragent' => 'ISV|OLAINDEX|OLAINDEX/9.9.9',
+            'retry_time' => Constants::DEFAULT_RETRY,
+            'timeout' => Constants::DEFAULT_TIMEOUT,
+        ]);
+        if (!$response->isSuccess()) {
+            throw new \ErrorException('ERROR.');
         }
-        return $response->getBody();
+        $body = $response->getBody();
+        return $body->getContents();
     }
 
     /**
@@ -111,7 +112,8 @@ class AuthorizeService
     /**
      * 请求获取access_token
      * @param $code
-     * @return \Psr\Http\Message\StreamInterface|\Swlib\Http\StreamInterface
+     * @return string
+     * @throws \ErrorException
      */
     public function getAccessToken($code)
     {
@@ -125,7 +127,8 @@ class AuthorizeService
     /**
      * 请求刷新access_token
      * @param $existingRefreshToken
-     * @return \Psr\Http\Message\StreamInterface|\Swlib\Http\StreamInterface
+     * @return string
+     * @throws \ErrorException
      */
     public function refreshAccessToken($existingRefreshToken)
     {
